@@ -2,10 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Golf Troop — Content Card</title>
+
+<!-- Home screen app -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FBFBF8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Golf Troop">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="data:image/png;base64,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">
-<link rel="apple-touch-icon" href="data:image/png;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -205,6 +213,7 @@
   @media (max-width:760px){
     body{padding:0;background:var(--card)}
     .masthead{border-radius:0;border-left:none;border-right:none;padding:12px 14px;
+      padding-top:calc(12px + env(safe-area-inset-top));
       position:sticky;top:0;z-index:20;justify-content:center;gap:10px}
     .brand{width:100%;justify-content:center}
     .brand .sub{display:none}
@@ -330,6 +339,30 @@
   }
   .foot code{font-family:var(--data);background:#DBDED4;padding:2px 6px;border-radius:3px}
 
+  /* ---------- asset preview ---------- */
+  .asset{
+    border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:#F4F5F0;
+  }
+  .asset[hidden]{display:none}
+  .asset img{width:100%;max-height:190px;object-fit:cover;display:block;background:#E4E6DF}
+  .asset .ameta{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;
+    font-family:var(--display);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);
+  }
+  .asset .ameta a{color:var(--green);font-weight:600;text-decoration:none}
+  .asset .ameta a:hover{text-decoration:underline}
+
+  /* link marker on a chip */
+  .chip .clip{margin-left:auto;opacity:.8;font-size:11px}
+
+  /* ---------- sync status ---------- */
+  .sync{display:inline-flex;align-items:center;gap:7px}
+  .sync i{width:8px;height:8px;border-radius:50%;background:#B6BDB0;flex:none;transition:background .2s}
+  .sync.ok i{background:var(--green)}
+  .sync.busy i{background:#E0A526;animation:pulse 1s infinite}
+  .sync.err i{background:var(--flag)}
+  @keyframes pulse{50%{opacity:.3}}
+
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -377,10 +410,11 @@
   </div>
 
   <div class="foot">
-    <span>Changes save to this browser automatically. To share them, hit <b>Export</b> and commit the file as <code>data.json</code> in the repo.</span>
+    <span id="sync" class="sync"><i></i><span>Connecting…</span></span>
     <span id="count"></span>
   </div>
 </div>
+
 
 <div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="mTitle">
   <div class="modal">
@@ -411,7 +445,14 @@
         </div>
         <div class="f">
           <label for="iLink">Asset link</label>
-          <input id="iLink" type="url" placeholder="https://">
+          <input id="iLink" type="url" placeholder="Paste a Dropbox link">
+        </div>
+      </div>
+      <div class="asset" id="asset" hidden>
+        <img id="assetImg" alt="" hidden>
+        <div class="ameta">
+          <span id="assetKind">Asset attached</span>
+          <a id="assetOpen" href="#" target="_blank" rel="noopener">Open ↗</a>
         </div>
       </div>
       <div class="f">
@@ -461,10 +502,12 @@ const SEED = [
 ];
 
 /* ---------- state ---------- */
-let posts = load();
+let posts = [];
 let cursor = new Date(); cursor.setDate(1);
 let view = "month";
 let editingId = null;
+let lastSynced = null;   // server's updatedAt, so we can spot other people's edits
+let pushTimer = null;
 
 const $ = s => document.querySelector(s);
 const el = (t,c,txt) => { const n=document.createElement(t); if(c)n.className=c; if(txt!=null)n.textContent=txt; return n; };
@@ -478,14 +521,71 @@ function localKey(d){
   return [d.getFullYear(), String(d.getMonth()+1).padStart(2,"0"), String(d.getDate()).padStart(2,"0")].join("-");
 }
 function safeLS(fn, fallback){ try{ return fn(); }catch(e){ return fallback; } }
-function load(){
-  const raw = safeLS(()=>localStorage.getItem("gt-content-card"), null);
-  if(raw){ try{ const p = JSON.parse(raw); if(Array.isArray(p)) return p; }catch(e){} }
-  return SEED.slice();
+
+/* ---------- server sync ---------- */
+const CACHE_KEY = "gt-cache";
+
+function setStatus(state, text){
+  const s = $("#sync");
+  s.className = "sync " + state;
+  s.querySelector("span").textContent = text;
 }
+
+async function api(method, body){
+  const res = await fetch("/api/posts", {
+    method,
+    headers: { "content-type":"application/json" },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if(!res.ok) throw new Error("request failed");
+  return res.json();
+}
+
+/* Pull the shared calendar. Seeds it on very first run. */
+async function pull(silent){
+  try{
+    if(!silent) setStatus("busy","Loading…");
+    const data = await api("GET");
+    if(data.posts === null){                 // nobody has saved anything yet
+      posts = SEED.slice();
+      await push();
+      return;
+    }
+    if(data.updatedAt !== lastSynced){
+      posts = data.posts;
+      lastSynced = data.updatedAt;
+      safeLS(()=>localStorage.setItem(CACHE_KEY, JSON.stringify(posts)));
+      render();
+    }
+    setStatus("ok","All changes saved");
+  }catch(err){
+    const cached = safeLS(()=>localStorage.getItem(CACHE_KEY), null);
+    if(cached && !posts.length){ try{ posts = JSON.parse(cached); render(); }catch(e){} }
+    setStatus("err","Offline — showing last saved copy");
+  }
+}
+
+/* Send the current calendar up. Debounced so typing doesn't hammer it. */
+async function push(){
+  pushTimer = null;
+  try{
+    setStatus("busy","Saving…");
+    const data = await api("PUT", { posts });
+    lastSynced = data.updatedAt;
+    safeLS(()=>localStorage.setItem(CACHE_KEY, JSON.stringify(posts)));
+    setStatus("ok","All changes saved");
+    render();
+  }catch(err){
+    setStatus("err","Couldn't save — check your connection");
+  }
+}
+
+/* Called after every edit: paint immediately, sync a beat later. */
 function save(){
-  safeLS(()=>localStorage.setItem("gt-content-card", JSON.stringify(posts)));
   render();
+  setStatus("busy","Saving…");
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(push, 600);
 }
 function toast(msg){
   const t = $("#toast"); t.textContent = msg; t.classList.add("up");
@@ -541,11 +641,11 @@ function renderStrip(rows){
 function renderMonth(rows){
   const wrap = $("#monthView"); wrap.innerHTML = "";
   const grid = el("div","grid");
-  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(d => grid.append(el("div","head",d)));
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => grid.append(el("div","head",d)));
   grid.append(el("div","head tot","WK"));
 
   const first = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
-  const offset = (first.getDay()+6)%7;              // Monday-first
+  const offset = first.getDay();                   // Sunday-first
   const start = new Date(first); start.setDate(1-offset);
   const todayKey = localKey(new Date());
 
@@ -612,6 +712,7 @@ function chip(p){
   const m = el("div","m");
   m.append(el("span",null, t.label));
   if(p.course) m.append(el("span",null,"· "+p.course));
+  if(p.link) m.append(el("span","clip", isVideo(p.link) ? "▶" : "◧"));
   b.append(m);
   b.onclick = () => openModal(p.id);
   b.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", p.id); b.classList.add("dragging"); });
@@ -705,6 +806,7 @@ function openModal(id, presetDate){
   $("#iCourse").value  = p?.course  ?? "";
   $("#iLink").value    = p?.link    ?? "";
   $("#iCaption").value = p?.caption ?? "";
+  refreshAsset();
   $("#delBtn").hidden = !p;
   $("#scrim").setAttribute("open","");
   setTimeout(()=>$("#iTitle").focus(), 30);
@@ -782,17 +884,67 @@ $("#fileIn").onchange = e => {
 fill($("#fType"), TYPES, true);
 fill($("#iType"), TYPES, false);
 
-/* Loads a shared data.json sitting next to this file in the repo,
-   the first time someone opens the page on a device. */
-(async () => {
-  const touched = safeLS(()=>localStorage.getItem("gt-content-card"), null);
-  if(!touched){
-    try{
-      const res = await fetch("data.json", {cache:"no-store"});
-      if(res.ok){ const j = await res.json(); if(Array.isArray(j)) posts = j; }
-    }catch(e){}
+/* ---------- assets ----------
+   Dropbox share links end in ?dl=0, which opens their web viewer.
+   Swapping to raw=1 gives the file itself, so images can preview inline. */
+function directUrl(url){
+  if(!url) return "";
+  if(/dropbox\.com/.test(url)){
+    return url.replace(/([?&])dl=0/, "$1raw=1").replace(/([?&])dl=1/, "$1raw=1")
+              + (/[?&](raw|dl)=/.test(url) ? "" : (url.includes("?") ? "&raw=1" : "?raw=1"));
   }
+  return url;
+}
+function isImage(url){
+  return /\.(jpe?g|png|gif|webp|heic|avif)(\?|$)/i.test(url || "");
+}
+function isVideo(url){
+  return /\.(mp4|mov|m4v|webm)(\?|$)/i.test(url || "");
+}
+function assetLabel(url){
+  if(isVideo(url)) return "Video attached";
+  if(isImage(url)) return "Image attached";
+  if(/dropbox\.com/.test(url)) return "Dropbox link";
+  if(/drive\.google/.test(url)) return "Google Drive link";
+  return "Link attached";
+}
+function refreshAsset(){
+  const raw = $("#iLink").value.trim();
+  const box = $("#asset"), img = $("#assetImg");
+  if(!raw){ box.hidden = true; return; }
+  const url = directUrl(raw);
+  box.hidden = false;
+  $("#assetKind").textContent = assetLabel(raw);
+  $("#assetOpen").href = raw;
+  if(isImage(raw)){
+    img.hidden = false;
+    img.src = url;
+    img.onerror = () => { img.hidden = true; $("#assetKind").textContent = "Link attached — preview unavailable"; };
+  } else {
+    img.hidden = true;
+    img.removeAttribute("src");
+  }
+}
+$("#iLink").addEventListener("input", refreshAsset);
+
+/* ---------- polling: pick up the other person's edits ---------- */
+function startPolling(){
+  setInterval(() => {
+    if(document.hidden) return;
+    if($("#scrim").hasAttribute("open")) return;   // don't yank the form out from under someone
+    if(pushTimer) return;                          // we have unsent changes
+    pull(true);
+  }, 15000);
+  document.addEventListener("visibilitychange", () => {
+    if(!document.hidden && !pushTimer) pull(true);
+  });
+}
+
+/* ---------- boot ---------- */
+(async () => {
   render();
+  await pull();
+  startPolling();
 })();
 </script>
 </body>
