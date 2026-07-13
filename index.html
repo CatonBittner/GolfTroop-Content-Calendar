@@ -958,7 +958,7 @@ function renderAssets(){
     bar.append(el("span",null, draftAssets.length + " files attached"));
     const all = el("button",null,"Download all");
     all.type = "button";
-    all.onclick = () => downloadAll();
+    all.onclick = () => downloadAll(all);
     bar.append(all);
     wrap.append(bar);
   }
@@ -1006,19 +1006,75 @@ function renderAssets(){
   });
 }
 
-/* Browsers cancel rapid-fire downloads, so stagger them. */
-function downloadAll(){
-  draftAssets.forEach((a, i) => {
+/* Downloading a stack of files from a browser is fiddly.
+   Two routes, picked on size:
+
+   ZIP   — fetch each file, compress client-side, hand over one archive.
+           Clean, but every byte passes through memory, so it's capped.
+   FRAMES— hidden iframes hitting Dropbox's dl=1 (which sends
+           Content-Disposition: attachment). Anchors won't work here: the
+           `download` attribute is ignored cross-origin, so stacked clicks
+           just navigate the page and cancel each other.                  */
+
+const ZIP_CAP = 250 * 1024 * 1024;   // 250MB — above this, memory gets dicey
+
+function downloadViaFrames(files){
+  files.forEach((a, i) => {
     setTimeout(() => {
-      const link = el("a");
-      link.href = dlUrl(a.link);
-      link.setAttribute("download", a.name);
-      document.body.append(link);
-      link.click();
-      link.remove();
-    }, i * 700);
+      const f = document.createElement("iframe");
+      f.style.display = "none";
+      f.src = dlUrl(a.link);
+      document.body.append(f);
+      setTimeout(() => f.remove(), 60000);
+    }, i * 900);
   });
-  toast("Downloading " + draftAssets.length + " files");
+  toast("Downloading " + files.length + " files");
+}
+
+async function downloadAll(btn){
+  const files = draftAssets.slice();
+  const total = files.reduce((n, a) => n + (a.bytes || 0), 0);
+
+  if(typeof JSZip === "undefined" || total > ZIP_CAP){
+    if(total > ZIP_CAP) toast("Too large to zip — downloading separately");
+    downloadViaFrames(files);
+    return;
+  }
+
+  const label = btn ? btn.textContent : "";
+  const setLabel = t => { if(btn) btn.textContent = t; };
+  if(btn) btn.disabled = true;
+
+  try{
+    const zip = new JSZip();
+    for(let i = 0; i < files.length; i++){
+      setLabel("Fetching " + (i+1) + "/" + files.length);
+      const res = await fetch(rawUrl(files[i].link));
+      if(!res.ok) throw new Error("fetch failed");
+      zip.file(files[i].name, await res.blob());
+    }
+
+    setLabel("Zipping…");
+    const blob = await zip.generateAsync({ type:"blob" });
+
+    const post = $("#iTitle").value.trim() || "assets";
+    const name = post.replace(/[^\w\s-]/g,"").trim().replace(/\s+/g,"-").toLowerCase();
+
+    const a = el("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = name + ".zip";
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+
+    toast("Downloaded " + files.length + " files as a zip");
+  }catch(err){
+    // Dropbox doesn't always allow cross-origin reads. Fall back quietly.
+    toast("Zip unavailable — downloading separately");
+    downloadViaFrames(files);
+  }finally{
+    setLabel(label);
+    if(btn) btn.disabled = false;
+  }
 }
 
 $("#iType").addEventListener("change", renderAssets);
