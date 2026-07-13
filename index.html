@@ -347,6 +347,19 @@
   .attach:hover{border-color:var(--green);color:var(--green);background:rgba(11,124,62,.06)}
   .assets{display:grid;gap:10px}
   .assets:empty{display:none}
+  .allbar{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:9px 12px;border:1px solid var(--rule);border-radius:var(--r);background:#F4F5F0;
+  }
+  .allbar span{
+    font-family:var(--display);font-size:12px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-2);
+  }
+  .allbar button{
+    background:var(--ink);color:#fff;padding:7px 14px;border-radius:var(--r);
+    font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  }
+  .allbar button:hover{background:var(--green)}
   .asset{border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:#F4F5F0}
   .asset .frame{
     position:relative;background:#14170F;display:grid;place-items:center;
@@ -940,6 +953,16 @@ function renderAssets(){
   const spec = SPECS[$("#iType").value] || SPECS.reel;
   wrap.dataset.ratio = spec.ratio;
 
+  if(draftAssets.length > 1){
+    const bar = el("div","allbar");
+    bar.append(el("span",null, draftAssets.length + " files attached"));
+    const all = el("button",null,"Download all");
+    all.type = "button";
+    all.onclick = () => downloadAll();
+    bar.append(all);
+    wrap.append(bar);
+  }
+
   draftAssets.forEach((a, i) => {
     const box = el("div","asset");
 
@@ -981,6 +1004,21 @@ function renderAssets(){
     box.append(meta);
     wrap.append(box);
   });
+}
+
+/* Browsers cancel rapid-fire downloads, so stagger them. */
+function downloadAll(){
+  draftAssets.forEach((a, i) => {
+    setTimeout(() => {
+      const link = el("a");
+      link.href = dlUrl(a.link);
+      link.setAttribute("download", a.name);
+      document.body.append(link);
+      link.click();
+      link.remove();
+    }, i * 700);
+  });
+  toast("Downloading " + draftAssets.length + " files");
 }
 
 $("#iType").addEventListener("change", renderAssets);
