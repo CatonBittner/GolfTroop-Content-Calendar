@@ -161,21 +161,22 @@
   }
   .wtot small{display:block;font-size:9px;color:#939C8E;text-align:center;letter-spacing:.08em}
 
-  /* post chip */
+  /* post chip — solid fill, colour IS the type */
   .chip{
-    text-align:left;width:100%;border-radius:var(--r);padding:5px 6px 5px 8px;
-    background:#fff;border:1px solid var(--rule);border-left:3px solid var(--green);
-    display:block;transition:transform .1s,box-shadow .12s;cursor:grab;
+    text-align:left;width:100%;border-radius:var(--r);padding:6px 8px;
+    background:var(--green);color:#fff;border:none;
+    display:block;transition:transform .1s,box-shadow .12s,filter .12s;cursor:grab;
   }
-  .chip:hover{box-shadow:0 3px 10px -4px rgba(20,23,15,.35);transform:translateX(1px)}
+  .chip:hover{box-shadow:0 4px 12px -4px rgba(20,23,15,.45);transform:translateY(-1px);filter:brightness(1.12)}
   .chip.dragging{opacity:.4}
   .chip .t{font-size:12px;font-weight:500;line-height:1.3;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .chip .m{
     margin-top:3px;display:flex;gap:5px;align-items:center;
-    font-family:var(--display);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);
+    font-family:var(--display);font-size:10px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;color:rgba(255,255,255,.78);
   }
-  .dot{width:6px;height:6px;border-radius:50%;flex:none}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
 
   /* ---------- List view ---------- */
   .list{padding:0}
@@ -189,19 +190,91 @@
   .row .t em{display:block;font-style:normal;font-size:12px;color:#7E887C;margin-top:2px;
     display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
   .tag{
-    display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:20px;
-    border:1px solid var(--rule);font-family:var(--display);font-size:11px;
-    letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
+    display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;
+    background:var(--green);color:#fff;border:none;
+    font-family:var(--display);font-size:11px;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;
   }
-  @media (max-width:860px){
-    .row{grid-template-columns:1fr;gap:6px}
-    .grid{grid-template-columns:1fr}
-    .grid .head{display:none}
-    .wtot{display:none}
-    .day{min-height:auto}
-    .day.dim{display:none}
+  @media (max-width:900px){
+    .row{grid-template-columns:1fr;gap:5px;padding:14px 16px}
+    .row .d{order:-1}
+    .row .tag{justify-self:start}
+  }
+
+  /* ---------- Phone ---------- */
+  @media (max-width:760px){
+    body{padding:0;background:var(--card)}
+    .masthead{border-radius:0;border-left:none;border-right:none;padding:12px 14px;
+      position:sticky;top:0;z-index:20;justify-content:center;gap:10px}
+    .brand{width:100%;justify-content:center}
     .brand .sub{display:none}
+    .brand .badge{width:30px;height:30px}
+    .brand .wordmark{height:18px}
+    .month-nav{width:100%;justify-content:space-between}
+    .month-nav .m{font-size:21px;min-width:0;flex:1}
+    .strip{border-left:none;border-right:none;overflow-x:auto;flex-wrap:nowrap;
+      -webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .strip::-webkit-scrollbar{display:none}
+    .stat{padding:9px 14px;white-space:nowrap}
+    .toolbar{border-left:none;border-right:none;padding:10px 12px;gap:8px}
+    .toolbar .seg{flex:1}
+    .toolbar .seg button{flex:1;padding:10px 0}
+    .toolbar .field:not(.grow){flex:1}
+    .toolbar .field:not(.grow) select{width:100%}
+    .toolbar .grow{flex:1 1 100%}
+    #addBtn{flex:1 1 100%;padding:12px}
+    #exportBtn,#importBtn{flex:1}
+    .card-body{border-radius:0;border-left:none;border-right:none;box-shadow:none}
+    .foot{padding:14px;margin-top:0;font-size:11px;background:var(--paper)}
+
+    /* compact dot grid — tap a day to open it */
+    .grid{grid-template-columns:repeat(7,1fr)}
+    .wtot,.head.tot{display:none}
+    .head{padding:7px 2px;text-align:center;font-size:11px;letter-spacing:.06em}
+    .day{min-height:58px;padding:4px 2px;gap:3px;align-items:center;cursor:pointer}
+    .day .n{font-size:13px;justify-content:center;width:100%}
+    .day .add{display:none}
+    .day.today .n{color:var(--green);font-weight:500}
+    .day .dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+    .day .dots .dot{width:9px;height:9px}
+    .day .more{font-family:var(--data);font-size:9px;color:var(--ink-2)}
+    .chip{display:none}
+    .day:active{background:rgba(11,124,62,.08)}
+
+    /* modal as bottom sheet */
+    .scrim{padding:0;align-items:end}
+    .modal{width:100%;max-height:94vh;border-radius:12px 12px 0 0}
+    .modal .two{grid-template-columns:1fr}
+    .modal footer{position:sticky;bottom:0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+    .f input,.f select,.f textarea{font-size:16px;padding:11px 12px}  /* 16px stops iOS zoom */
   }
+
+  /* ---------- Day sheet (phone) ---------- */
+  .daysheet{
+    position:fixed;inset:0;background:rgba(20,23,15,.5);display:none;z-index:40;
+    align-items:end;backdrop-filter:blur(2px);
+  }
+  .daysheet[open]{display:grid}
+  .daysheet .panel{
+    background:var(--card);width:100%;border-radius:12px 12px 0 0;
+    max-height:80vh;display:flex;flex-direction:column;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .daysheet .ph{
+    display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+    border-bottom:1px solid var(--rule);
+  }
+  .daysheet .ph h3{
+    font-family:var(--display);font-size:19px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+  }
+  .daysheet .ph button{font-size:20px;color:var(--ink-2);padding:4px 8px}
+  .daysheet .pb{overflow-y:auto;padding:10px 12px;display:grid;gap:8px}
+  .daysheet .pb .chip{display:block;padding:11px 12px;cursor:pointer}
+  .daysheet .pb .chip .t{font-size:14px;-webkit-line-clamp:3}
+  .daysheet .pb .chip .m{font-size:11px}
+  .daysheet .pf{padding:10px 12px;border-top:1px solid var(--rule);background:#F4F5F0}
+  .daysheet .pf .btn{width:100%;padding:12px}
+  .daysheet .none{padding:24px 12px;text-align:center;color:#7E887C;font-size:13px}
 
   .empty{padding:60px 20px;text-align:center}
   .empty p{font-family:var(--display);font-size:17px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
@@ -354,6 +427,17 @@
   </div>
 </div>
 
+<div class="daysheet" id="daysheet" role="dialog" aria-modal="true" aria-labelledby="dsTitle">
+  <div class="panel">
+    <div class="ph">
+      <h3 id="dsTitle">—</h3>
+      <button id="dsClose" aria-label="Close">✕</button>
+    </div>
+    <div class="pb" id="dsBody"></div>
+    <div class="pf"><button class="btn green" id="dsAdd">+ Add post</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -363,9 +447,9 @@
    ============================================================ */
 
 const TYPES = [
-  {id:"reel",     label:"Reel",     color:"#0B7C3E"},
-  {id:"carousel", label:"Carousel", color:"#14170F"},
-  {id:"email",    label:"Email",    color:"#C8452F"}
+  {id:"reel",     label:"Reel",     color:"#0B7C3E"},                      /* Golf Troop green */
+  {id:"carousel", label:"Carousel", color:"#14170F", onDark:"#FBFBF8"},    /* wordmark black */
+  {id:"email",    label:"Email",    color:"#D64000"}                       /* flag orange */
 ];
 
 /* --- Seed data. Replace with the real plan, or Import a data.json --- */
@@ -445,9 +529,10 @@ function renderStrip(rows){
   strip.append(total);
   TYPES.forEach(t => {
     const n = inMonth.filter(p=>p.type===t.id).length;
+    const onDark = t.onDark || t.color;   // black reads as nothing on the dark strip
     const d = el("div","stat");
-    const dot = el("span","dot"); dot.style.background = t.color==="#14170F" ? "#8E968A" : t.color;
-    const b = el("b",null,String(n)); b.style.color = t.color==="#14170F" ? "#FBFBF8" : t.color;
+    const dot = el("span","dot"); dot.style.background = onDark;
+    const b = el("b",null,String(n)); b.style.color = onDark;
     d.append(dot, b, el("span",null,t.label+(n===1?"":"s")));
     strip.append(d);
   });
@@ -482,7 +567,22 @@ function renderMonth(rows){
       add.onclick = e => { e.stopPropagation(); openModal(null, key); };
       n.append(add);
       cell.append(n);
-      dayPosts.forEach(p => cell.append(chip(p)));
+
+      if(isMobile()){
+        const dots = el("div","dots");
+        dayPosts.slice(0,3).forEach(p => {
+          const dot = el("span","dot"); dot.style.background = T(p.type).color; dots.append(dot);
+        });
+        cell.append(dots);
+        if(dayPosts.length>3) cell.append(el("div","more","+"+(dayPosts.length-3)));
+        cell.setAttribute("role","button");
+        cell.tabIndex = 0;
+        cell.setAttribute("aria-label", fmtDay(key)+", "+dayPosts.length+" posts");
+        cell.onclick = () => openDay(key);
+        cell.onkeydown = e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openDay(key); } };
+      } else {
+        dayPosts.forEach(p => cell.append(chip(p)));
+      }
 
       cell.addEventListener("dragover", e => { e.preventDefault(); cell.classList.add("drop"); });
       cell.addEventListener("dragleave", ()=> cell.classList.remove("drop"));
@@ -506,12 +606,11 @@ function renderMonth(rows){
 function chip(p){
   const t = T(p.type);
   const b = el("button","chip");
-  b.style.borderLeftColor = t.color;
+  b.style.background = t.color;
   b.draggable = true;
   b.append(el("div","t", p.title || "Untitled"));
   const m = el("div","m");
-  const dot = el("span","dot"); dot.style.background = t.color;
-  m.append(dot, el("span",null, t.label));
+  m.append(el("span",null, t.label));
   if(p.course) m.append(el("span",null,"· "+p.course));
   b.append(m);
   b.onclick = () => openModal(p.id);
@@ -537,9 +636,8 @@ function renderList(rows){
     const title = el("div","t", p.title || "Untitled");
     if(p.caption) title.append(el("em",null,p.caption));
     r.append(title);
-    const tag = el("span","tag");
-    const dot = el("span","dot"); dot.style.background = t.color;
-    tag.append(dot, document.createTextNode(t.label));
+    const tag = el("span","tag", t.label);
+    tag.style.background = t.color;
     r.append(tag);
     r.append(el("div","d", p.course || "—"));
     r.onclick = () => openModal(p.id);
@@ -559,6 +657,42 @@ function fill(sel, items, withAll){
   items.forEach(i => { const o=el("option",null,i.label); o.value=i.id; sel.append(o); });
   if([...sel.options].some(o=>o.value===cur)) sel.value = cur;
 }
+
+/* ---------- phone: day sheet ---------- */
+const MOBILE = window.matchMedia("(max-width:760px)");
+function isMobile(){ return MOBILE.matches; }
+let openDate = null;
+
+function openDay(key){
+  openDate = key;
+  $("#dsTitle").textContent = fmtDay(key);
+  renderDay();
+  $("#daysheet").setAttribute("open","");
+}
+function renderDay(){
+  const body = $("#dsBody"); body.innerHTML = "";
+  const dayPosts = filtered().filter(p => p.date===openDate);
+  if(!dayPosts.length){
+    body.append(el("div","none","No posts on this day yet."));
+    return;
+  }
+  dayPosts.forEach(p => {
+    const c = chip(p);
+    c.draggable = false;
+    c.onclick = () => { closeDay(); openModal(p.id); };
+    body.append(c);
+  });
+}
+function closeDay(){ $("#daysheet").removeAttribute("open"); openDate = null; }
+$("#dsClose").onclick = closeDay;
+$("#daysheet").onclick = e => { if(e.target===$("#daysheet")) closeDay(); };
+$("#dsAdd").onclick = () => { const d = openDate; closeDay(); openModal(null, d); };
+
+/* redraw when crossing the phone/desktop line */
+let wasMobile = isMobile();
+window.addEventListener("resize", () => {
+  if(isMobile() !== wasMobile){ wasMobile = isMobile(); closeDay(); render(); }
+});
 
 /* ---------- modal ---------- */
 function openModal(id, presetDate){
@@ -600,7 +734,10 @@ $("#delBtn").onclick = () => {
 $("#closeBtn").onclick = $("#cancelBtn").onclick = closeModal;
 $("#scrim").onclick = e => { if(e.target===$("#scrim")) closeModal(); };
 document.addEventListener("keydown", e => {
-  if(e.key==="Escape" && $("#scrim").hasAttribute("open")) closeModal();
+  if(e.key==="Escape"){
+    if($("#scrim").hasAttribute("open")) closeModal();
+    else if($("#daysheet").hasAttribute("open")) closeDay();
+  }
   const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
   if(e.key==="n" && !typing && !$("#scrim").hasAttribute("open")){ e.preventDefault(); openModal(); }
 });
