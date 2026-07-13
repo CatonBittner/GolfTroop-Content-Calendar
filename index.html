@@ -17,6 +17,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Dropbox Chooser. Paste your app key into data-app-key below. -->
+<script src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="	
+hit5kiayzt0kq3d"></script>
 <style>
   :root{
     --green:#0B7C3E;        /* Golf Troop green */
@@ -339,21 +343,35 @@
   }
   .foot code{font-family:var(--data);background:#DBDED4;padding:2px 6px;border-radius:3px}
 
-  /* ---------- asset preview ---------- */
-  .asset{
-    border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:#F4F5F0;
+  /* ---------- attachments ---------- */
+  .attach{width:100%;border-color:var(--rule);color:var(--ink-2);min-height:38px;padding:8px}
+  .attach:hover{border-color:var(--green);color:var(--green);background:rgba(11,124,62,.06)}
+  .assets{display:grid;gap:10px}
+  .assets:empty{display:none}
+  .asset{border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:#F4F5F0}
+  .asset .media{width:100%;display:block;background:#E4E6DF;max-height:260px}
+  .asset img.media{object-fit:cover}
+  .asset video.media{max-height:300px}
+  .asset .ameta{display:flex;align-items:center;gap:10px;padding:8px 10px}
+  .asset .nm{
+    flex:1;min-width:0;font-family:var(--data);font-size:11px;color:var(--ink-2);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
-  .asset[hidden]{display:none}
-  .asset img{width:100%;max-height:190px;object-fit:cover;display:block;background:#E4E6DF}
-  .asset .ameta{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;
-    font-family:var(--display);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);
+  .asset .sz{font-family:var(--data);font-size:11px;color:#8E968A;flex:none}
+  .asset .dl{
+    flex:none;background:var(--green);color:#fff;padding:6px 12px;border-radius:var(--r);
+    font-family:var(--display);font-size:11px;font-weight:600;letter-spacing:.12em;
+    text-transform:uppercase;text-decoration:none;
   }
-  .asset .ameta a{color:var(--green);font-weight:600;text-decoration:none}
-  .asset .ameta a:hover{text-decoration:underline}
+  .asset .dl:hover{background:var(--green-d)}
+  .asset .rm{flex:none;color:var(--flag);font-size:15px;padding:2px 6px;line-height:1}
+  .asset .rm:hover{background:rgba(200,69,47,.1);border-radius:var(--r)}
+  .asset .fallback{
+    padding:22px 12px;text-align:center;font-size:12px;color:#7E887C;background:#EDEEE8;
+  }
 
-  /* link marker on a chip */
-  .chip .clip{margin-left:auto;opacity:.8;font-size:11px}
+  /* file marker on a chip */
+  .chip .clip{margin-left:auto;opacity:.85;font-size:10px;font-family:var(--data);letter-spacing:0}
 
   /* ---------- sync status ---------- */
   .sync{display:inline-flex;align-items:center;gap:7px}
@@ -444,17 +462,11 @@
           <datalist id="courses"></datalist>
         </div>
         <div class="f">
-          <label for="iLink">Asset link</label>
-          <input id="iLink" type="url" placeholder="Paste a Dropbox link">
+          <label>Files</label>
+          <button class="btn ghost attach" id="iAttach" type="button">+ Attach from Dropbox</button>
         </div>
       </div>
-      <div class="asset" id="asset" hidden>
-        <img id="assetImg" alt="" hidden>
-        <div class="ameta">
-          <span id="assetKind">Asset attached</span>
-          <a id="assetOpen" href="#" target="_blank" rel="noopener">Open ↗</a>
-        </div>
-      </div>
+      <div class="assets" id="assets"></div>
       <div class="f">
         <label for="iCaption">Caption</label>
         <textarea id="iCaption" placeholder="Write the caption as it will post…"></textarea>
@@ -712,7 +724,8 @@ function chip(p){
   const m = el("div","m");
   m.append(el("span",null, t.label));
   if(p.course) m.append(el("span",null,"· "+p.course));
-  if(p.link) m.append(el("span","clip", isVideo(p.link) ? "▶" : "◧"));
+  const n = assetsOf(p).length;
+  if(n) m.append(el("span","clip", n === 1 ? "◧ 1" : "◧ "+n));
   b.append(m);
   b.onclick = () => openModal(p.id);
   b.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", p.id); b.classList.add("dragging"); });
@@ -804,9 +817,9 @@ function openModal(id, presetDate){
   $("#iDate").value    = p?.date    ?? presetDate ?? localKey(new Date());
   $("#iType").value    = p?.type    ?? "reel";
   $("#iCourse").value  = p?.course  ?? "";
-  $("#iLink").value    = p?.link    ?? "";
   $("#iCaption").value = p?.caption ?? "";
-  refreshAsset();
+  draftAssets = p ? assetsOf(p).slice() : [];
+  renderAssets();
   $("#delBtn").hidden = !p;
   $("#scrim").setAttribute("open","");
   setTimeout(()=>$("#iTitle").focus(), 30);
@@ -821,7 +834,7 @@ $("#saveBtn").onclick = () => {
     date: $("#iDate").value || localKey(new Date()),
     type: $("#iType").value,
     course: $("#iCourse").value.trim(),
-    link: $("#iLink").value.trim(),
+    assets: draftAssets.slice(),
     caption: $("#iCaption").value.trim()
   };
   if(editingId){ Object.assign(posts.find(p=>p.id===editingId), data); toast("Post updated"); }
@@ -884,48 +897,75 @@ $("#fileIn").onchange = e => {
 fill($("#fType"), TYPES, true);
 fill($("#iType"), TYPES, false);
 
-/* ---------- assets ----------
-   Dropbox share links end in ?dl=0, which opens their web viewer.
-   Swapping to raw=1 gives the file itself, so images can preview inline. */
-function directUrl(url){
-  if(!url) return "";
-  if(/dropbox\.com/.test(url)){
-    return url.replace(/([?&])dl=0/, "$1raw=1").replace(/([?&])dl=1/, "$1raw=1")
-              + (/[?&](raw|dl)=/.test(url) ? "" : (url.includes("?") ? "&raw=1" : "?raw=1"));
+/* ---------- assets (Dropbox) ----------
+   Chooser hands back a preview link ending in ?dl=0.
+   raw=1  -> the file itself, so it can render inline.
+   dl=1   -> forces a download of the untouched original.            */
+let draftAssets = [];
+
+const rawUrl = u => u.replace(/([?&])dl=0/, "$1raw=1");
+const dlUrl  = u => u.replace(/([?&])dl=0/, "$1dl=1");
+const isImg  = n => /\.(jpe?g|png|gif|webp|heic|avif)$/i.test(n || "");
+const isVid  = n => /\.(mp4|mov|m4v|webm)$/i.test(n || "");
+const fileSize = b => !b ? "" : b > 1048576 ? (b/1048576).toFixed(1)+" MB" : Math.round(b/1024)+" KB";
+
+/* Older posts stored a single `link`. Fold those into the new shape. */
+function assetsOf(p){
+  if(Array.isArray(p.assets)) return p.assets;
+  if(p.link) return [{ name:"Attachment", link:p.link, bytes:0 }];
+  return [];
+}
+
+function renderAssets(){
+  const wrap = $("#assets"); wrap.innerHTML = "";
+  draftAssets.forEach((a, i) => {
+    const box = el("div","asset");
+
+    if(isImg(a.name)){
+      const img = el("img","media"); img.src = rawUrl(a.link); img.alt = a.name;
+      img.onerror = () => { img.replaceWith(el("div","fallback","Preview unavailable — use Download")); };
+      box.append(img);
+    } else if(isVid(a.name)){
+      const v = document.createElement("video");
+      v.className = "media"; v.controls = true; v.preload = "metadata"; v.playsInline = true;
+      v.src = rawUrl(a.link);
+      v.onerror = () => { v.replaceWith(el("div","fallback","Preview unavailable — use Download")); };
+      box.append(v);
+    }
+
+    const meta = el("div","ameta");
+    meta.append(el("span","nm", a.name));
+    if(a.bytes) meta.append(el("span","sz", fileSize(a.bytes)));
+
+    const dl = el("a","dl","Download");
+    dl.href = dlUrl(a.link); dl.setAttribute("download","");
+    meta.append(dl);
+
+    const rm = el("button","rm","✕");
+    rm.type = "button";
+    rm.title = "Remove from this post";
+    rm.onclick = () => { draftAssets.splice(i,1); renderAssets(); };
+    meta.append(rm);
+
+    box.append(meta);
+    wrap.append(box);
+  });
+}
+
+$("#iAttach").onclick = () => {
+  if(typeof Dropbox === "undefined" || !Dropbox.choose){
+    toast("Dropbox isn't set up yet"); return;
   }
-  return url;
-}
-function isImage(url){
-  return /\.(jpe?g|png|gif|webp|heic|avif)(\?|$)/i.test(url || "");
-}
-function isVideo(url){
-  return /\.(mp4|mov|m4v|webm)(\?|$)/i.test(url || "");
-}
-function assetLabel(url){
-  if(isVideo(url)) return "Video attached";
-  if(isImage(url)) return "Image attached";
-  if(/dropbox\.com/.test(url)) return "Dropbox link";
-  if(/drive\.google/.test(url)) return "Google Drive link";
-  return "Link attached";
-}
-function refreshAsset(){
-  const raw = $("#iLink").value.trim();
-  const box = $("#asset"), img = $("#assetImg");
-  if(!raw){ box.hidden = true; return; }
-  const url = directUrl(raw);
-  box.hidden = false;
-  $("#assetKind").textContent = assetLabel(raw);
-  $("#assetOpen").href = raw;
-  if(isImage(raw)){
-    img.hidden = false;
-    img.src = url;
-    img.onerror = () => { img.hidden = true; $("#assetKind").textContent = "Link attached — preview unavailable"; };
-  } else {
-    img.hidden = true;
-    img.removeAttribute("src");
-  }
-}
-$("#iLink").addEventListener("input", refreshAsset);
+  Dropbox.choose({
+    linkType: "preview",          // a durable share link, not a 4-hour temp one
+    multiselect: true,            // a carousel is 8 images, not 1
+    extensions: ["images","video"],
+    success: files => {
+      files.forEach(f => draftAssets.push({ name:f.name, link:f.link, bytes:f.bytes }));
+      renderAssets();
+    }
+  });
+};
 
 /* ---------- polling: pick up the other person's edits ---------- */
 function startPolling(){
